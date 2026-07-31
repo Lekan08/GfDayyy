@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For My Love 💕</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to external stylesheet -->
+</head>
+  </head>
+  <body>
+    <canvas id="hearts-canvas"></canvas>
+
+    <!-- LOADING -->
+    <div id="loading">
+      <div class="heart-loader"></div>
+      <p>loading something special...</p>
+    </div>
+
+    <!-- ENVELOPE -->
+    <div id="envelope-screen">
+      <h1>You've got a little something 💌</h1>
+      <div class="envelope" id="envelope">
+        <div class="letter"></div>
+        <div class="back"></div>
+        <div class="flap"></div>
+        <div class="heart-seal">❤️</div>
+      </div>
+      <p class="hint">tap the envelope to open</p>
+    </div>
+
+    <!-- MAIN SITE -->
+    <div id="site">
+      <section class="hero">
+        <h2>Happy Girlfriend's Day</h2>
+        <h1>To the girl who has my heart</h1>
+        <p>
+          Every day with you feels like a page out of the sweetest story I never
+          knew I needed. This little site is just for you — scroll down, love.
+        </p>
+        <div class="scroll-cue">↓</div>
+      </section>
+
+      <section id="letter">
+        <h2 class="section-title">A Little Letter</h2>
+        <p class="section-sub">Just a few words from my heart to yours.</p>
+        <div class="letter-card">
+          <p>My love,</p>
+          <br />
+          <p>
+            I know I don't say it enough, but you make ordinary days feel like
+            something worth remembering. Thank you for your patience, your
+            laugh, and the way you make everything better just by being there.
+          </p>
+          <br />
+          <p>Happy Girlfriend's Day — here's to many more memories together.</p>
+          <p class="sign">— forever yours<br> KPURKISH </p>
+        </div>
+      </section>
+
+      <section id="memories">
+        <h2 class="section-title">Our Memories</h2>
+        <p class="section-sub">
+          A few of my favorite moments with you.
+        </p>
+        <div class="gallery">
+          <figure>
+            <img
+              src="001.jpeg"
+              alt=""
+            />
+            <figcaption>Our first date</figcaption>
+          </figure>  <figure>
+            <img
+              src="006.jpeg"
+              alt=""
+            />
+            <figcaption>Silly faces</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="004.jpeg"
+              alt=""
+            />
+            <figcaption>Us together</figcaption>
+          </figure>
+        
+          <figure>
+            <img
+              src="002.jpeg"
+              alt=""
+            />
+            <figcaption>My favorite pic of you</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="reasons">
+        <h2 class="section-title">Reasons I Love You</h2>
+        <p class="section-sub">Tap a card to flip it and find out why.</p>
+        <div class="reasons-wrap" id="reasons-wrap">
+          <!-- cards injected by JS -->
+        </div>
+      </section>
+
+      <section id="countdown-section">
+        <h2 class="section-title">Us, In Numbers</h2>
+        <p class="section-sub">
+          Set the start date in the script to your anniversary.
+        </p>
+        <div class="countdown">
+          <div class="box">
+            <div class="num" id="cd-days">0</div>
+            <div class="label">Days</div>
+          </div>
+          <div class="box">
+            <div class="num" id="cd-hours">0</div>
+            <div class="label">Hours</div>
+          </div>
+          <div class="box">
+            <div class="num" id="cd-mins">0</div>
+            <div class="label">Minutes</div>
+          </div>
+          <div class="box">
+            <div class="num" id="cd-secs">0</div>
+            <div class="label">Seconds</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="final">
+        <h1>I love you 💕</h1>
+        <p>
+          Thank you for being exactly who you are. Happy Girlfriend's Day,
+          always and forever.
+        </p>
+        <button class="heart-btn" id="burst-btn">Tap for hearts</button>
+      </section>
+    </div>
+
+    <button id="music-toggle" title="Toggle music">♪</button>
+
+    <script>
+      /* ---------------- Floating hearts canvas background ---------------- */
+      const canvas = document.getElementById("hearts-canvas");
+      const ctx = canvas.getContext("2d");
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener("resize", resize);
+
+      const colors = ["#ff5c8a", "#ffb3c6", "#ffd166"];
+      class Heart {
+        constructor() {
+          this.reset(true);
+        }
+        reset(initial) {
+          this.x = Math.random() * canvas.width;
+          this.y = initial ? Math.random() * canvas.height : canvas.height + 20;
+          this.size = 6 + Math.random() * 14;
+          this.speed = 0.3 + Math.random() * 0.8;
+          this.drift = (Math.random() - 0.5) * 0.6;
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+          this.opacity = 0.2 + Math.random() * 0.5;
+        }
+        update() {
+          this.y -= this.speed;
+          this.x += this.drift;
+          if (this.y < -20) this.reset(false);
+        }
+        draw() {
+          ctx.save();
+          ctx.globalAlpha = this.opacity;
+          ctx.translate(this.x, this.y);
+          ctx.scale(this.size / 20, this.size / 20);
+          ctx.fillStyle = this.color;
+          ctx.beginPath();
+          ctx.moveTo(0, 4);
+          ctx.bezierCurveTo(-10, -8, -22, 4, 0, 20);
+          ctx.bezierCurveTo(22, 4, 10, -8, 0, 4);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+      const hearts = Array.from({ length: 40 }, () => new Heart());
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hearts.forEach((h) => {
+          h.update();
+          h.draw();
+        });
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      /* ---------------- Loading screen ---------------- */
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("loading").classList.add("hide");
+        }, 1400);
+      });
+
+      /* ---------------- Envelope open interaction ---------------- */
+      const envelope = document.getElementById("envelope");
+      const envelopeScreen = document.getElementById("envelope-screen");
+      const site = document.getElementById("site");
+      envelope.addEventListener("click", () => {
+        envelope.classList.add("open");
+        setTimeout(() => {
+          envelopeScreen.classList.add("hide");
+          site.classList.add("show");
+        }, 900);
+      });
+
+      /* ---------------- Reasons flip cards ---------------- */
+      const reasons = [
+        { icon: "😊", text: "The way you smile at nothing" },
+        { icon: "🎧", text: "You put up with my terrible taste in music" },
+        { icon: "🫶", text: "You believe in me, always" },
+        { icon: "🍜", text: "You share your food with me" },
+        { icon: "🌙", text: "Late night talks with you" },
+        { icon: "💌", text: "You make me want to be better" },
+      ];
+      const wrap = document.getElementById("reasons-wrap");
+      reasons.forEach((r, i) => {
+        const card = document.createElement("div");
+        card.className = "flip-card";
+        card.innerHTML = `
+    <div class="flip-inner">
+      <div class="flip-front"><span>${r.icon}</span>Reason #${i + 1}</div>
+      <div class="flip-back">${r.text}</div>
+    </div>`;
+        card.addEventListener("click", () => card.classList.toggle("flipped"));
+        wrap.appendChild(card);
+      });
+
+      /* ---------------- Countdown timer ---------------- */
+      const startDate = new Date('2026-05-22T14:20:00'); // <-- set your anniversary date here
+      function updateCountdown() {
+        const now = new Date();
+        const diff = now - startDate;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        document.getElementById("cd-days").textContent = d;
+        document.getElementById("cd-hours").textContent = h;
+        document.getElementById("cd-mins").textContent = m;
+        document.getElementById("cd-secs").textContent = s;
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+
+      /* ---------------- Burst of hearts button ---------------- */
+      document.getElementById("burst-btn").addEventListener("click", (e) => {
+        for (let i = 0; i < 24; i++) {
+          const el = document.createElement("div");
+          el.textContent = "💗";
+          el.style.position = "fixed";
+          el.style.left = e.clientX + "px";
+          el.style.top = e.clientY + "px";
+          el.style.fontSize = 14 + Math.random() * 18 + "px";
+          el.style.pointerEvents = "none";
+          el.style.zIndex = 200;
+          el.style.transition = "transform 1.2s ease, opacity 1.2s ease";
+          document.body.appendChild(el);
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 80 + Math.random() * 160;
+          requestAnimationFrame(() => {
+            el.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist - 80}px)`;
+            el.style.opacity = 0;
+          });
+          setTimeout(() => el.remove(), 1300);
+        }
+      });
+
+      /* ---------------- Music toggle (optional) ----------------
+   Add your own audio file and uncomment below to enable music.
+------------------------------------------------------------- */
+      // const audio = new Audio('your-song.mp3');
+      // audio.loop = true;
+      const musicBtn = document.getElementById("music-toggle");
+      let playing = false;
+      musicBtn.addEventListener("click", () => {
+        playing = !playing;
+        musicBtn.classList.toggle("playing", playing);
+        // if(playing){ audio.play(); } else { audio.pause(); }
+      });
+    </script>
+  </body>
+</html>
